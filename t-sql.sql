@@ -5,67 +5,74 @@ USE Base
 GO
 CREATE SCHEMA harm
 ----------------------------------------------------------------------------------------------
---Apaga tabela
-DROP TABLE xxxxx
+--Top
+SELECT TOP 100 *
+FROM [TABELA]
 ----------------------------------------------------------------------------------------------
---Apaga conteúdo da tabela, com condicional e não muda estrutura da tabela
-DELETE FROM xxxxx
-WHERE xxxxx
+--Top com porcentagem
+SELECT TOP 1 PERCENT *
+FROM [TABELA]
 ----------------------------------------------------------------------------------------------
---Apaga conteúdo da tabela e modifica sua estrutura, não pode ter condicional
-TRUNCATE TABLE xxxxx
+--Top com regra de seleção
+SELECT TOP 100 WITH TIES *
+FROM [TABELA]
+WHERE [CAMPO] > 2
+ORDER BY [CAMPO]
+----------------------------------------------------------------------------------------------
+--Excluir tabela
+DROP TABLE [TABELA]
+----------------------------------------------------------------------------------------------
+--Exclui linhas da tabela, com condicional e não muda estrutura da tabela
+DELETE FROM [TABELA]
+WHERE [CAMPO] = 'DADOS'
+----------------------------------------------------------------------------------------------
+--Exclui conteúdo da tabela e modifica sua estrutura, não pode ter condicional
+TRUNCATE TABLE [TABELA]
 ----------------------------------------------------------------------------------------------
 --Contagem de registros de toda tabela
-SELECT COUNT (*) FROM xxxxx
+SELECT COUNT (*) FROM [TABELA]
+-------------
+SELECT  DISTINCT         
+                MaterialDocument,
+                DataDeLançamento,
+                COUNT(1)
 ----------------------------------------------------------------------------------------------
 --Converte um campo
-CAST(YYYYY AS nvarchar(50))  AS ValorConvertido
+CAST([CAMPO] AS nvarchar(50))  AS [NOME CAMPO]
 ----------------------------------------------------------------------------------------------
 --Concatenar
-CONCAT (Name, Name2) AS Name1
+CONCAT ([CAMPO1], [CAMPO2]) AS [NOME CAMPO]
 ----------------------------------------------------------------------------------------------
+--Case
 CASE
-        WHEN YYYYY = '123456' THEN 'Y'
+        WHEN [CAMPO] = 'DADOS' THEN 'Y'
         ELSE 'N'
-END AS xxxxx
+END AS [NOME CAMPO]
 ----------------------------------------------------------------------------------------------
 --Update
-
-UPDATE [dbo].[TB_TRAT_FOLHA_MPE] SET ATUACAO = 'EXCLUIR' 
-WHERE	ANO_MES = '2022-06'
-		AND CPF IN('2769010107', '86521080130', '27668708812', '7143017442', '37157573881', '50301983852', '14142557807')
-
+UPDATE [TABELA] SET [CAMPO] = 'EXCLUIR' 
+WHERE [CAMPO] = 'DADOS'
 ----------------------------------------------------------------------------------------------
 --Condicionais
-WERE YYYYY LIKE '%[A-Z]%'
-WERE YYYYY LIKE IN ('', '')
-WERE YYYYY LIKE NOT IN ('', '')
-WERE YYYYY LIKE NOT IN (SELECT DISTINCT xxxxx FROM xxxxx WERE Flag = 1)
-
-SELECT	DISTINCT MaterialDocument,
-		DataDeLançamento,
-		COUNT(1)
+WHERE [CAMPO] LIKE '%[A-Z]%'
+WHERE [CAMPO] LIKE IN ('DADOS1', 'DADOS2')
+WHERE [CAMPO] LIKE NOT IN ('DADOS1', 'DADOS2')
+WHERE [CAMPO] LIKE NOT IN (SELECT DISTINCT [CAMPO] FROM [TABLE] WHERE [CAMPO] = 'DADOS')
 ----------------------------------------------------------------------------------------------
---having
-FROM [Base].[sapecc].[tb_wp03_mm_material_document]
-WHERE FORMAT(DataDeLançamento, 'yyyyMM') = '202201'
-GROUP BY MaterialDocument,
-		DataDeLançamento
+--Having
+SELECT *
+FROM [TABLE]
+WHERE FORMAT([CAMPO DATA], 'yyyyMM') = 'DADOS'
+GROUP BY [CAMPO]
 HAVING COUNT(1) > 1
 ----------------------------------------------------------------------------------------------
---distinct por data
-SELECT	MaterialDocument,
-		COUNT(DISTINCT DataDeLançamento)
-		
-FROM [Base].[sapecc].[tb_wp03_mm_material_document]
---WHERE FORMAT(DataDeLançamento, 'yyyyMM') = '202201'
-GROUP BY MaterialDocument		
-HAVING COUNT(DISTINCT DataDeLançamento) > 1
-----------------------------------------------------------------------------------------------
---Condicional LIKE Otimizado
-SELECT * 
-FROM table1 
-WHERE REGEXP_LIKE(lower(item_name), 'samsung|xiaomi|iphone|huawei')
+--Distinct por data
+SELECT	[CAMPO1]
+	COUNT(DISTINCT [CAMPO DATA])
+FROM [TABLE]
+WHERE FORMAT([[CAMPO DATA]], 'yyyyMM') = 'DADOS'
+GROUP BY [CAMPO1]		
+HAVING COUNT(DISTINCT [CAMPO DATA]) > 1
 ----------------------------------------------------------------------------------------------
 --Convert long list of IN clause into a temporary table
 SELECT * 
@@ -78,10 +85,10 @@ FROM Table1 as t1 JOIN (
 ----------------------------------------------------------------------------------------------
 --Conta itens de uma coluna específica
 SELECT 
-                DISTINCT YYYYY,
+                DISTINCT [CAMPO],
                 COUNT(1)
-FROM xxxxx
-GROUP BY YYYYY
+FROM [TABELA]
+GROUP BY [CAMPO]
 ----------------------------------------------------------------------------------------------
 --Having
 SELECT grupo, SUM(qtd) as total
@@ -94,11 +101,11 @@ WITH cte AS (
                 /*Nome colunas*/
                 ROW_NUMBER() OVER (
                 PARTITION BY
-                        /*Nome colunas*/
-                    ORDER BY
-                        /*Nome colunas*/
+                /*Nome colunas*/
+                ORDER BY
+                /*Nome colunas*/
                 ) row_num
-        FROM xxxxx
+        FROM [TABELA]
 )
 SELECT *
 FROM    cte
@@ -106,15 +113,15 @@ WHERE   row_num >= 2
 ORDER BY 1
 ----------------------------------------------------------------------------------------------
 --Comparar um campo com zeros a esquerda Ex.: 3000 - 0000030000
-FROM REPLACE(LTRIM(REPLACE(xxxxx.YYYYY, '0', ' ')), ' ', '0') NOT IN('3000', '2001', '4005')
+FROM REPLACE(LTRIM(REPLACE([CAMPO], '0', ' ')), ' ', '0') NOT IN('3000', '2001', '4005')
 ----------------------------------------------------------------------------------------------
---Common table expression
+--Ranking
 WITH cte AS (
 SELECT
-        YYYYY,
+        [CAMPO],
         COUNT(1) AS QTY
-FROM xxxxx
-GROUP BY YYYYY
+FROM [TABELA]
+GROUP BY [CAMPO]
 )
 SELECT *,
         SUM(QTY) OVER() AS QTY_GERAL,
@@ -122,40 +129,26 @@ SELECT *,
 FROM cte
 ORDER BY 2 DESC
 ----------------------------------------------------------------------------------------------
---TOP
-SELECT TOP 100 *
-FROM xxxxx
-----------------------------------------------------------------------------------------------
---TOP com porcentagem
-SELECT TOP 1 PERCENT *
-FROM xxxxx
-----------------------------------------------------------------------------------------------
---TOP com regra de seleção
-SELECT TOP 100 WITH TIES *
-FROM xxxxx
-WHERE YYYYY > 2
-ORDER BY YYYYY
-----------------------------------------------------------------------------------------------
 --Format Date
-FORMAT(XXXXX, 'yyyyMM') = '202201'
+FORMAT([CAMPO DATA], 'yyyyMM') = '202201'
 ----------------------------------------------------------------------------------------------
 --Valores distintos de uma coluna específica
 SELECT 
-        DISTINCT YYYYY
-FROM xxxxx
+        DISTINCT [CAMPO]
+FROM [TABELA]
 Order by 1
 ----------------------------------------------------------------------------------------------
 --Contagem através do agrupamento
 SELECT 
-        YYYYY,
+        [CAMPO],
         COUNT(1) AS QTY
-FROM xxxxx
-GROUP BY YYYYY
+FROM [TABELA]
+GROUP BY [CAMPO]
 ORDER BY 2 DESC
 ----------------------------------------------------------------------------------------------
 --Cria primary key em uma tabela
-ALTER TABLE xxxxx
-ADD CONSTRAINT PK_xxxxx PRIMARY KEY (
+ALTER TABLE [TABELA]
+ADD CONSTRAINT [PK_NOME QUALQUER] PRIMARY KEY (
         YYYYY,
         ZZZZZ,
         KKKKK
@@ -175,118 +168,127 @@ FROM
                 P = Stored procedure*/
         INNER JOIN sys.all_columns AS C (NOLOCK) ON T.id = C.object_id AND T.XTYPE = 'U'
 WHERE
-        C.NAME LIKE '%YYYYY%'
+        C.NAME LIKE '%TEXTO%'
 ORDER BY T.name ASC
 ----------------------------------------------------------------------------------------------
---Procedure
-USE [Base]
+--Variável
+DECLARE @ULT_DESPESA FLOAT;
+    SET @ULT_DESPESA = (SELECT DESPESA
+	                      FROM (SELECT *,
+                               ROW_NUMBER() OVER (PARTITION BY SEGMENTO ORDER BY CAST(SUBSTRING(MES, 1, 4) AS INT) DESC, 
+							   CAST(SUBSTRING(MES, 6, 2) AS INT) DESC) AS RANK
+                         FROM   TABELA
+                         WHERE  SEGMENTO = 'XXX') AS A
+						 WHERE A.RANK = 1
+                        );
+----------------------------------------------------------------------------------------------
+-- Replace Patindex - encontra a posição de um ou mais caracters
+SELECT  [CAMPO]
+        ,TRY_CAST((CASE WHEN SUBSTRING([CAMPO], 1, 1) = '.' THEN REPLACE([CAMPO], '.','0.')
+                        WHEN SUBSTRING([CAMPO], 1, 2) = '-.' THEN REPLACE([CAMPO], '-.','-0.')
+                        WHEN SUBSTRING([CAMPO], 1, 2) = '0.' THEN REPLACE([CAMPO], '0.','0.')
+                        ELSE REPLACE([CAMPO], PATINDEX('%.%', [CAMPO]), '') END) AS float) AS [CAMPO]
+----------------------------------------------------------------------------------------------
+-- Sobreposicao horarios
+LAG(HORA_INICIO, 1) OVER (PARTITION BY [DATA] ORDER BY HORA_INICIO, HORA_FIM DESC) AS HORA_INICIO_CAL
+LEAD(HORA_INICIO, 1) OVER (PARTITION BY [DATA] ORDER BY HORA_INICIO, HORA_FIM DESC) AS HORA_INICIO_CAL
+------------------------
+--1ª Solucao
+SELECT  HORA_INICIO,
+        HORA_FIM,
+        CASE WHEN       HORA_INICIO = (LAG(HORA_INICIO, 1) OVER (PARTITION BY [DATA] ORDER BY HORA_INICIO, HORA_FIM DESC)) 
+	        AND	HORA_FIM    = (LAG(HORA_FIM, 1) OVER (PARTITION BY [DATA] ORDER BY HORA_INICIO, HORA_FIM DESC)) 
+			THEN 0
+		ELSE DATEDIFF(MINUTE, HORA_INICIO, HORA_FIM)
+	END AS [TEMPO_MINUTOS]
+        
+FROM [TABELA]
+WHERE [DATA] = '2022-01-4'
+------------------------
+--2ª Solucao
+WITH rank_ex as (
+SELECT  
+        HORA_INICIO,
+        HORA_FIM,
+        ROW_Number() OVER(PARTITION BY [DATA] ORDER BY HORA_INICIO, HORA_FIM ASC) AS RANK
+FROM [TABELA]
+),
+
+calc_temp AS (
+SELECT  DISTINCT
+	A.HORA_INICIO,
+        A.HORA_FIM,
+        CASE WHEN A.[DATA] <> B.[DATA] THEN DATEDIFF(MINUTE,B.HORA_INICIO, B.HORA_FIM)
+             WHEN A.[DATA] =  B.[DATA] AND A.HORA_INICIO = B.HORA_INICIO AND A.HORA_FIM = B.HORA_FIM THEN 0
+             WHEN A.[DATA] =  B.[DATA] AND DATEDIFF(MINUTE, B.HORA_FIM, A.HORA_INICIO) < 0 THEN DATEDIFF(MINUTE, B.HORA_FIM, B.HORA_FIM)
+             ELSE DATEDIFF(MINUTE, A.HORA_INICIO, A.HORA_FIM)
+        END AS [TEMPO_MINUTOS]
+
+FROM    rank_ex AS A LEFT JOIN
+        rank_ex AS B    ON  A.[DATA]    = B.[DATA]
+                        AND A.[RANK]    = B.[RANK] + 1
+----------------------------------------------------------------------------------------------
+--Procedure sem limite de data
+USE [DATABASE]
 GO
 
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-
-CREATE PROCEDURE [dbo].[xxxxx] AS
-DROP TABLE IF EXISTS Base.dbo.ZZZZZ
+CREATE PROCEDURE [NOME PROCEDURE] AS --Create ou Alter
+DROP TABLE IF EXISTS [TABELA NOVA];
 
 WITH cte1 AS (
         SELECT *
-        FROM    Base.aux.KKKKK
+        FROM [TABELA1]
 ),
 cte2 AS (
         SELECT *
-        FROM    Base.aux.LLLLL
+        FROM [TABELA2]
 )
 
 SELECT  
         cte1.*
         cte2.*
-        INTO Base.dbo.ZZZZZ
+
+INTO [TABELA NOVA]
 
 FROM    cte1 AS cte1
-        LEFT JOIN cte2 AS cte2 ON 
-        cte1.* = cte2.*
-WHERE 
-        1=1
+        LEFT JOIN cte2 AS cte2 ON
+        cte1.[CAMPO] = cte2.[CAMPO]
+WHERE   1=1
         AND...
 ----------------------------------------------------------------------------------------------
-DECLARE @ULT_DESPESA FLOAT;
-    SET @ULT_DESPESA = (SELECT DESPESA_TECNICO 
-	                      FROM (SELECT *,
-                               ROW_NUMBER() OVER (PARTITION BY SEGMENTO ORDER BY CAST(SUBSTRING(MES, 1, 4) AS INT) DESC, 
-							   CAST(SUBSTRING(MES, 6, 2) AS INT) DESC) AS RANK
-                         FROM TB_AUX_CUSTO_UNITARIO_DESPESAS_TEC
-                         WHERE SEGMENTO = 'B2B') AS A
-						 WHERE A.RANK = 1
-                        );
-----------------------------------------------------------------------------------------------
--- Replace Patindex
-SELECT
-                [TEMPO_FILA_CORRIDO]
-                ,TRY_CAST((CASE WHEN SUBSTRING([TEMPO_FILA_CORRIDO], 1, 1) = '.' THEN REPLACE([TEMPO_FILA_CORRIDO], '.','0.')
-                          WHEN SUBSTRING([TEMPO_FILA_CORRIDO], 1, 2) = '-.' THEN REPLACE([TEMPO_FILA_CORRIDO], '-.','-0.')
-                          WHEN SUBSTRING([TEMPO_FILA_CORRIDO], 1, 2) = '0.' THEN REPLACE([TEMPO_FILA_CORRIDO], '0.','0.')
-                          ELSE REPLACE([TEMPO_FILA_CORRIDO], PATINDEX ('%.%', [TEMPO_FILA_CORRIDO]) , '') END) AS float) AS [TEMPO_FILA_CORRIDO]
-----------------------------------------------------------------------------------------------
--- Sobreposicao horarios
-LAG(HORA_INICIO, 1) OVER (PARTITION BY [DATA] ORDER BY HORA_INICIO, HORA_FIM DESC) AS HORA_INICIO_CAL
-LEAD(HORA_INICIO, 1) OVER (PARTITION BY [DATA] ORDER BY HORA_INICIO, HORA_FIM DESC) AS HORA_INICIO_CAL
+--Procedure com limite de truncagem por data (Obs.: Somente é deletado dados que
+--      existem na staging com mesma data.
 
---1ª Solucao
-SELECT  PROBLEMA,
-        RESPONSAVEL,
-        [DATA],
-        HORA_INICIO,
-        HORA_FIM,
-        CASE WHEN	HORA_INICIO = (LAG(HORA_INICIO, 1) OVER (PARTITION BY [DATA] ORDER BY HORA_INICIO, HORA_FIM DESC)) 
-			AND		HORA_FIM	= (LAG(HORA_FIM, 1) OVER (PARTITION BY [DATA] ORDER BY HORA_INICIO, HORA_FIM DESC)) 
-			THEN 0
-			ELSE DATEDIFF(MINUTE, HORA_INICIO, HORA_FIM)
-		END AS TEMPO_MIN
+USE [DATABASE]
+GO
 
-FROM [Algar-SLA].[dbo].[TB_TRAT_EXPURGOS_HORAS_SLA_ONLINE]
-WHERE [DATA] = '2022-01-4'
+ALTER PROCEDURE [NOME PROCEDURE] --Create ou Alter
+AS
 
---2ª Solucao
-WITH rank_ex as (
-SELECT  
-		ID,
-		PROBLEMA,
-        RESPONSAVEL,
-        [DATA],
-        HORA_INICIO,
-        HORA_FIM,
-        ROW_Number() OVER (PARTITION BY [DATA] ORDER BY HORA_INICIO, HORA_FIM ASC) AS RANK
-FROM [Algar-SLA].[dbo].[TB_TRAT_EXPURGOS_HORAS_SLA_ONLINE]
-),
-calc_temp AS (
-SELECT  DISTINCT
-		A.ID,
-        A.PROBLEMA,
-        A.RESPONSAVEL,
-        A.[DATA],
-        A.HORA_INICIO,
-        A.HORA_FIM,
-        CASE WHEN A.PROBLEMA = 'TORRE DE CONTROLE' THEN 0
-             WHEN a.DATA <> b.DATA THEN DATEDIFF(MINUTE,B.HORA_INICIO, B.HORA_FIM)
-             WHEN A.DATA = B.DATA AND A.HORA_INICIO = B.HORA_INICIO AND A.HORA_FIM = B.HORA_FIM THEN 0 -- OK
-             WHEN A.DATA = B.DATA AND DATEDIFF(MINUTE, B.HORA_FIM, A.HORA_INICIO) <0 THEN DATEDIFF(MINUTE, B.HORA_FIM, B.HORA_FIM)
-             ELSE DATEDIFF(MINUTE, A.HORA_INICIO, A.HORA_FIM) -- OK
-             end 
-             AS TEMPO_MIN
-FROM    rank_ex AS A LEFT JOIN
-        rank_ex AS B    ON A.[DATA]    = B.[DATA]
-                        AND A.RANK      = B.RANK+1
+DECLARE @DT_MAX DATE,
+        @DT_MIN DATE;
+SET @DT_MAX = (SELECT MAX(CASE WHEN [DATA_REFERENCIA] LIKE '%/%' THEN CONVERT(DATE, [DATA_REFERENCIA], 103)
+                                ELSE CONVERT(DATE, [DATA_REFERENCIA], 102) END) FROM [TABELA STAGING])
+SET @DT_MIN = (SELECT MIN(CASE WHEN [DATA_REFERENCIA] LIKE '%/%' THEN CONVERT(DATE, [DATA_REFERENCIA], 103)
+                                ELSE CONVERT(DATE, [DATA_REFERENCIA], 102) END) FROM [TABELA STAGING])
 
+DELETE [TABELA NOVA]
+WHERE CAST([DATA_REFERENCIA] AS DATE) BETWEEN @DT_MIN AND @DT_MAX
+
+INSERT INTO [TABELA NOVA]
+
+SELECT 
+        [TODOS CAMPOS]
+--INTO [TABELA NOVA] --Caso seja necessário ignorar a data do delete
+FROM    [TABELA STAGING]
 ----------------------------------------------------------------------------------------------
 -- Data e Hora
-Time			-- hh:mm:ss[.nnnnnnn]
-Date			-- YYYY-MM-DD
-Smalldatetime	-- YYYY-MM-DD hh:mm:ss
-DateTime		-- YYYY-MM-DD hh:mm:ss[.nnn]
-datetime2		-- YYYY-MM-DD hh:mm:ss[.nnnnnnn]
-Datetimeoffset	-- YYYY-MM-DD hh:mm:ss[.nnnnnnn][+|-]hh:mm
+Time            -- hh:mm:ss[.nnnnnnn]
+Date            -- YYYY-MM-DD
+Smalldatetime   -- YYYY-MM-DD hh:mm:ss
+DateTime        -- YYYY-MM-DD hh:mm:ss[.nnn]
+datetime2       -- YYYY-MM-DD hh:mm:ss[.nnnnnnn]
+Datetimeoffset  -- YYYY-MM-DD hh:mm:ss[.nnnnnnn][+|-]hh:mm
 
 SELECT 'GETDATE()' AS [Function], GETDATE() AS [Value]
 SELECT 'GETUTCDATE()' AS [Function], GETUTCDATE() AS [Value]
@@ -294,11 +296,11 @@ SELECT 'SYSDATETIME()' AS [Function], SYSDATETIME() AS [Value]
 SELECT 'SYSUTCDATETIME()' AS [Function], SYSUTCDATETIME() AS [Value]
 SELECT 'SYSDATETIMEOFFSET()' AS [Function], SYSDATETIMEOFFSET() AS [Value]
 
-SELECT DATEADD(YEAR, -1, '2013-04-02T00:00:00');	-- Subtrai um ano da data informada
-SELECT DATEADD(YEAR, +1, '2014-04-02T00:00:00');	-- Adiciona um ano à data informada
-SELECT DATEADD(Day, 1, '2014-04-29T00:00:00');		-- Adiciona um dia da data
-SELECT DATEADD(Month, -1, '2014-04-29T00:00:00');	-- Subtrai um mês da data
-SELECT DATEADD(hour , +1, '2014-04-29T00:00:00');	-- Adiciona uma hora à data
+SELECT DATEADD(YEAR, -1, '2013-04-02T00:00:00');  -- Subtrai um ano da data informada
+SELECT DATEADD(YEAR, +1, '2014-04-02T00:00:00');  -- Adiciona um ano à data informada
+SELECT DATEADD(Day, 1, '2014-04-29T00:00:00');    -- Adiciona um dia da data
+SELECT DATEADD(Month, -1, '2014-04-29T00:00:00'); -- Subtrai um mês da data
+SELECT DATEADD(hour , +1, '2014-04-29T00:00:00'); -- Adiciona uma hora à data
 
 SELECT DATEDIFF(year, '2005-12-31 23:59:59.9999999', '2006-01-01 00:00:00.0000000');
 SELECT DATEDIFF(quarter, '2005-12-31 23:59:59.9999999', '2006-01-01 00:00:00.0000000');
@@ -313,4 +315,3 @@ SELECT DATEDIFF(millisecond, '2005-12-31 23:59:59.9999999', '2006-01-01 00:00:00
 
 SET LANGUAGE Portuguese
 SELECT DATENAME(year , '2005-12-31');
-

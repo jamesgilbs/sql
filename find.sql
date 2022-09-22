@@ -13,5 +13,5 @@ FROM
                 P = Stored procedure*/
         INNER JOIN sys.all_columns AS C (NOLOCK) ON T.id = C.object_id AND T.XTYPE = 'U'
 WHERE
-        C.NAME LIKE '%DocVoucher%'
+        C.NAME LIKE '%TEXTO%'
 ORDER BY T.name ASC
